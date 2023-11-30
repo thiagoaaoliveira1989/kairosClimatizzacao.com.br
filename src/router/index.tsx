@@ -3,13 +3,13 @@ import { Route, Routes } from "react-router-dom";
 import { PublicRoutes } from "./PublicRoutes";
 import { PrivateRoutes } from "./PrivateRoutes";
 import { ErrorPage } from "../pages/public/ErrorPage";
-import { Header } from "../components/Header";
+import { HomePage } from "../pages";
 
 const AppRoutes: React.FC = () => {
   return (
     <Routes>
       <Route element={<PublicRoutes />}>
-        <Route path="/" element={<Header />} />
+        <Route path="/" element={<HomePage />} />
       </Route>
       <Route element={<PrivateRoutes />} >
 
