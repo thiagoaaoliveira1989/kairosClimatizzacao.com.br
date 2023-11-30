@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Raleway:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Kairós Refrigeração e Climatização</title>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        fontFamily: {
+          'roleway': ['Raleway', 'sans-serif'],
+          'oswald': ['Oswald', 'sans-serif'],
+          'roboto': ['Roboto', 'sans-serif']
+        },
+        extend: {
+          colors: {
+            primary: '#04518c',
+            secundary: '#349EFA',
+            grey0: '#DDDDDD',
+            grey1: '#C4C4C4',
+            grey2: '#B6B6B6',
+            fontPrimary: '#04518c',
+            fontSecondary: '#606060'
+          }
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>
