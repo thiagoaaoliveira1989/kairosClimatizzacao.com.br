@@ -15,11 +15,19 @@ export const Header = () => {
     const [hoveredContateNos, setHoveredContateNos] = useState(false);
     const [hoveredTrabalheConosco, setHoveredTrabalheConosco] = useState(false);
 
+    const menu = document.querySelector('.menu');
 
+    window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY;
+        console.log(scrollY);
+        if (scrollY !== 0) {
+            menu?.classList.remove('translate-y-[0]');
+        } 
+    });
 
     return (
-        <header className="flex flex-col w-[100vw] ">
-            <div className="flex items-center justify-center w-[100%] h-[90px] bg-grey0">
+        <header className="flex flex-col ">
+            <div className="flex items-center justify-center w-full  h-[90px] bg-grey0">
                 <div className="container m-auto w-[100%] h-[100%] ">
                     <ul className='flex gap-3 h-[100%] justify-between'>
                         <li className='flex flex-col items-end p-[10px]'>
@@ -61,7 +69,7 @@ export const Header = () => {
 
                 </div>
             </div>
-            <div className=' w-[100%] h-[115px] bg-grey1'>
+            <div className='menu w-[100%] h-[115px] bg-grey1 fixed transition-transform duration-300 transform translate-y-[90px]'>
                 <div className='container m-auto w-[100%] py-[10px] flex justify-between'>
                     <img src={Logo} alt="logo-site" className='w-[200px]' />
                     <nav className='flex justify-center items-center'>

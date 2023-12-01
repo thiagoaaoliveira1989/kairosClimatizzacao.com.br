@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import { PublicRoutes } from "./PublicRoutes";
 import { PrivateRoutes } from "./PrivateRoutes";
 import { ErrorPage } from "../pages/public/ErrorPage";
-import { HomePage } from "../pages";
+import { HomePage } from "../pages/public/HomePage";
 
 const AppRoutes: React.FC = () => {
   return (
