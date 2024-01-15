@@ -5,7 +5,7 @@ import Whats from '../../assets/whats.png';
 
 export const Footer = () => {
     return (
-        <footer className="flex-shrink-0 ">
+        <footer className="flex-shrink-0 mt-[4rem]">
             <div className="flex items-center justify-center w-full h-[300px] bg-primary">
                 <div className="container mx-auto">
                     <div className="flex flex-col gap-10 items-center justify-center">
@@ -31,8 +31,8 @@ export const Footer = () => {
                                 </a>
                             </li>
                         </ul>
-                        <p className="text-white">COPYRIGHT © 2023 Kairós Climatização Todos os direitos reservados.</p>
-                        <span className="text-white">Desenvolvido por Thiago Araujo</span>
+                        <p className="text-white text-center font-bold">COPYRIGHT © 2023 Kairós Climatização Todos os direitos reservados.</p>
+                        <span className="text-white text-center font-bold">Desenvolvido por <span className='text-secundary hover:text-white'>Thiago Araujo</span></span>
                     </div>
                 </div>
             </div>
