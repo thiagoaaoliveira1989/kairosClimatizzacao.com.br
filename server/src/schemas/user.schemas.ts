@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const userSchema = z.object({
     id: z.number().positive(),
-    name: z.string().min(1),
+    username: z.string().min(1),
     email: z.string().email().min(1),
     password: z.string().min(8),
     admin: z.boolean().default(false),
@@ -11,13 +11,13 @@ export const userSchema = z.object({
 
 export const createUserchema = userSchema.omit({ id: true });
 
-export const updateUserSchema = createUserchema.partial();
+export const updateUserSchema = createUserchema.optional();
 
 export const returnUserSchema = userSchema.omit({ password: true });
 
-export const loginUserSchema = createUserchema.omit({ name: true, admin: true });
+export const loginUserSchema = createUserchema.omit({ username: true, admin: true });
 
 export const returnLoginSchema = z.object({
-    acessToken: z.string(),
+    accessToken: z.string(),
 }).extend({ user: returnUserSchema })
 

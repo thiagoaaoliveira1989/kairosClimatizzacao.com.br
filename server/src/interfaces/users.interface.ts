@@ -1,9 +1,9 @@
 
 import { z } from "zod"
-import { createUserchema, loginUserSchema, returnLoginSchema, updateUserSchema, userSchema } from "../schemas/user.schemas";
+import { createUserchema, loginUserSchema, returnLoginSchema, returnUserSchema, updateUserSchema } from "../schemas/user.schemas";
 
 
-export type IReturnUser = z.infer<typeof userSchema>;
+export type IReturnUser = z.infer<typeof returnUserSchema>;
 
 export type ICreateUser = z.infer<typeof createUserchema>;
 
