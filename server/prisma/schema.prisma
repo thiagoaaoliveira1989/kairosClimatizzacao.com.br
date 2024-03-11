@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       BigInt  @id @default(autoincrement())
+  username String  @db.VarChar(255)
+  email    String  @unique @db.VarChar(255)
+  password String
+  admin    Boolean @default(false)
+
+  // Relacionamento com os formulários de contato
+  contactForms ContactForm[]
+
+  // Relacionamento com clientes pessoa física e pessoa jurídica
+  individualClient IndividualClient?
+  corporateClient  CorporateClient?
+}
+
+model ContactForm {
+  id      BigInt @id @default(autoincrement())
+  userId  BigInt
+  type    String // Pode ser 'general', 'schedule' ou 'emergency'
+  details String
+
+  name        String? @db.VarChar(255)
+  email       String? @db.VarChar(255)
+  phoneNumber String? @db.VarChar(20)
+  subject     String? @db.VarChar(255)
+  message     String? @db.Text
+
+  // Relacionamento com o usuário que enviou o formulário
+  user User @relation(fields: [userId], references: [id], map: "contactForms_user")
+
+  // Relacionamento bidirecional com IndividualClient
+  individualClient IndividualClient? @relation(fields: [userId], references: [id], map: "contactForms_individualClient")
+  corporateClient  CorporateClient?  @relation(fields: [userId], references: [id], map: "contactForms_corporateClient")
+
+  // Relacionamento com o agendamento associado ao formulário de contato
+  visitSchedule          VisitSchedule?
+  // Relacionamento com o agendamento suporte técnico
+  TechnicalSupportTicket TechnicalSupportTicket[]
+
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  // Índices para melhorar a consulta
+  @@index([userId], name: "idx_userId")
+  @@index([type], name: "idx_type")
+}
+
+model IndividualClient {
+  id             BigInt   @id @default(autoincrement())
+  userId         BigInt   @unique
+  cpf            String   @unique @db.VarChar(14)
+  dateOfBirth    DateTime
+  address        String
+  phoneNumber    String
+  contractNumber String   @unique @db.VarChar(20) // Novo campo para número de contrato
+
+  // Relacionamento com os formulários de contato
+  contactForms ContactForm[]
+
+  // Relacionamento com o usuário associado
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  // Índices para melhorar a consulta
+  @@index([userId], name: "idx_userId_IndividualClient")
+}
+
+model CorporateClient {
+  id                BigInt @id @default(autoincrement())
+  userId            BigInt @unique
+  cnpj              String @unique @db.VarChar(18)
+  stateRegistration String
+  address           String
+  phoneNumber       String
+  contractNumber    String @unique @db.VarChar(20) // Novo campo para número de contrato
+
+  // Relacionamento com os formulários de contato
+  contactForms ContactForm[]
+
+  // Relacionamento com o usuário associado
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  // Índices para melhorar a consulta
+  @@index([userId], name: "idx_userId_CorporateClient")
+}
+
+model VisitSchedule {
+  id           BigInt   @id @default(autoincrement())
+  name         String
+  date         DateTime
+  time         String
+  street       String
+  number       String
+  neighborhood String
+  city         String
+  landmark     String
+  createdAt    DateTime @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  // Relacionamento com o formulário de contato associado ao agendamento
+  contactForm ContactForm @relation(fields: [contactFormId], references: [id])
+
+  // Id do formulário de contato associado ao agendamento
+  contactFormId BigInt @unique
+}
+
+model TechnicalSupportTicket {
+  id             BigInt   @id @default(autoincrement())
+  contractNumber String   @db.VarChar(20)
+  name           String
+  phoneNumber    String
+  reason         String
+  createdAt      DateTime @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  // Relacionamento com o formulário de contato associado ao chamado técnico
+  contactForm ContactForm? @relation(fields: [contactFormId], references: [id])
+
+  // Id do formulário de contato associado ao chamado técnico
+  contactFormId BigInt?
+}

@@ -5,18 +5,22 @@ import jwt from 'jsonwebtoken';
 export class UsersController {
     private usersService = new UsersServices();
 
-    createUser = (req: Request, res: Response): Response => {
-        const newUser = this.usersService.createUser(req.body);
-        console.log(newUser);
-        return res.status(201).json(newUser);
-
-    }
-
+    createUser = async (req: Request, res: Response): Promise<Response> => {
+        try {
+            const user = await this.usersService.createUser(req.body);
+            return res.status(201).json({ message: 'User Created successful', user });
+        } catch (error: any) {
+            if (error.message === 'Email already exists') {
+                return res.status(400).json({ error: 'Email already exists' });
+            }
+            return res.status(500).json({ error: 'Error creating user' });
+        }
+    };
 
     findAllUsers = async (req: Request, res: Response): Promise<Response> => {
         try {
-            const allUsers = await this.usersService.findAllUsers();
-            return res.status(200).json({ allUsers });
+            const users = await this.usersService.findAllUsers();
+            return res.status(200).json({ users });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ error: 'Internal Server Error' });
@@ -25,14 +29,11 @@ export class UsersController {
 
     findUser = async (req: Request, res: Response): Promise<Response> => {
         const userId = req.params.id;
-        console.log(userId);
 
         try {
-            const userFind = await this.usersService.findUser(Number(userId));
-            return res.status(200).json({ userFind });
+            const user = await this.usersService.findUser(Number(userId));
+            return res.status(200).json({ user });
         } catch (error: any) {
-            console.log(error);
-
             if (error.message.includes('not found')) {
                 return res.status(404).json({ error: 'User not found' });
             } else {
@@ -46,7 +47,7 @@ export class UsersController {
 
         try {
             // Encontrar o usuário pelo email e senha
-            const user = await this.usersService.findUserByEmailAndPassword(email, password);
+            const user = await this.usersService.login(email, password);
 
             // Verificar se o usuário é um administrador
             if (user.admin) {
@@ -65,6 +66,39 @@ export class UsersController {
         }
     };
 
+    deleteUser = async (req: Request, res: Response): Promise<Response> => {
+        const userId = req.params.id;
 
+        try {
+            const user = await this.usersService.deleteUser(Number(userId));
+            return res.status(200).json({ user });
+
+        } catch (error: any) {
+
+            if (error.message.includes('not found')) {
+                return res.status(404).json({ error: 'User not found' });
+            } else {
+                return res.status(500).json({ error: 'Internal Server Error' });
+            }
+        }
+    }
+
+    updateUser = async (req: Request, res: Response): Promise<Response> => {
+        const userId = req.params.id;
+        const data = req.body;
+
+        try {
+            const user = await this.usersService.updateUser(Number(userId), data);
+            return res.status(200).json({ user });
+
+        } catch (error: any) {
+
+            if (error.message.includes('not found')) {
+                return res.status(404).json({ error: 'User not found' });
+            } else {
+                return res.status(500).json({ error: 'Internal Server Error' });
+            }
+        }
+    }
 
 }

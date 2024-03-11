@@ -12,3 +12,5 @@ usersRouter.post('/api/users/login', usersController.login);
 
 
 usersRouter.get('/api/users/:id', usersController.findUser);
+usersRouter.delete('/api/users/:id', usersController.deleteUser);
+usersRouter.put('/api/users/:id', usersController.updateUser);

@@ -1,4 +1,4 @@
-import { pool } from "../database";
+import { db } from "../database";
 import { TCreateAgendamento } from "../interfaces/agendamento.interface";
 
 export class AgendamentoService {
@@ -14,7 +14,7 @@ export class AgendamentoService {
         const values = [name, telefone, date, time, logradouro, numero, bairro, cidade, referencia, createdAt, updatedAt];
 
         try {
-            const result = await pool.query(query, values);
+            const result = await db.query(query, values);
             return result.rows[0];
         } catch (error) {
             console.error('Erro ao executar a consulta SQL:', error);
