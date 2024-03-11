@@ -59,13 +59,13 @@ export const Header = () => {
                     <div className="w-[100%] h-[100%] ">
                         <ul className='flex lg:gap-2 xl:gap-3 w-[100%] h-[100%] justify-between '>
                             <li className='pl-[2rem] flex flex-col items-end p-[10px]'>
-                                <a href="" className='flex items-center gap-2'>
+                                <div  className='flex items-center gap-2'>
                                     <img src={Agenda} alt="" />
                                     <div className='flex flex-col items-center gap-2'>
                                         <p className='text-fontPrimary font-bold lg:text-[1rem] lg:text-center 2xl:text-[1.2rem]'>Seg.-Sex.: 09:00 - 18:00</p>
                                         <span className='text-fontSecundary font-normal lg:text-[0.7rem] 2xl:text-[0.9rem]'>Serviço de Emergência 24h</span>
                                     </div>
-                                </a>
+                                </div>
                             </li>
                             <li className='flex flex-col items-end p-[10px]' >
                                 <button onClick={openModalChamados} className='flex items-center gap-2'>
@@ -97,7 +97,7 @@ export const Header = () => {
 
                     </div>
                 </div>
-                <div className='menu w-[100%] h-[115px] bg-primary fixed z-50 transition-transform duration-300 transform translate-y-[90px]'>
+                <div className='menu w-full h-[115px] bg-primary fixed z-50 transition-transform duration-300 transform translate-y-[90px]'>
                     <div className='w-[100%] h-[100%] px-[2rem] flex items-center justify-between text-center'>
                         <img src={Logo} alt="logo-site" className='w-[12rem] h-[5rem] flex' />
                         <nav className='flex justify-center items-center'>

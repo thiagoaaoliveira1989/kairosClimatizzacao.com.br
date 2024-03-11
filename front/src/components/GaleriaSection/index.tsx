@@ -50,7 +50,7 @@ export const GallerySection = () => {
     };
 
     return (
-        <section id="galeria" className="w-[100vw] h-[100vh] pt-1" >
+        <section id="galeria" className="w-[100vw] h-[100vh] pt-1 mt-[400px] sm:mt-[200px] lg:mt-[-210px] xl:mt-[-300px] 2xl:mt-[-250px]" >
             <h1 className="mt-[80px] lg:mt-[130px] text-[2.5rem] lg:text-[3.5rem] text-center font-bold">Galeria</h1>
             <div className='relative top-0 left-0 w-full h-full'>
                 <AnimatePresence  >

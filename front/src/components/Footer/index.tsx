@@ -11,28 +11,28 @@ export const Footer = () => {
                     <div className="flex flex-col gap-10 items-center justify-center">
                         <ul className='flex flex-row gap-6'>
                             <li>
-                                <a href=""> 
+                                <a href="https://www.facebook.com/kairosRefrigeracaoEletrica" target='_blank'> 
                                 <img src={Face} alt="" className='w-[48px]' />
                                 </a>
                             </li>
                             <li>
-                                <a href=""> 
+                                <a href="https://www.instagram.com/climatizacao_kairos/" target='_blank'> 
                                 <img src={Insta} alt=""  className='w-[48px]'/>
                                 </a>
                             </li>
                             <li>
-                                <a href=""> 
+                                <a href="mailto:contato@kairosclimatizacao.com.br" target='_blank'> 
                                 <img src={Gmail} alt=""  className='w-[48px]'/>
                                 </a>
                             </li>
                             <li>
-                                <a href=""> 
+                                <a href="https://api.whatsapp.com/message/FSUD3TCS5YXFN1?autoload=1&app_absent=0" target='_blank'> 
                                 <img src={Whats} alt=""  className='w-[48px]'/>
                                 </a>
                             </li>
                         </ul>
                         <p className="text-white text-center font-bold">COPYRIGHT © 2023 Kairós Climatização Todos os direitos reservados.</p>
-                        <span className="text-white text-center font-bold">Desenvolvido por <span className='text-secundary hover:text-white'>Thiago Araujo</span></span>
+                        <span className="text-white text-center font-bold">Desenvolvido por <span className='text-secundary hover:text-white'><a href="https://www.linkedin.com/in/thiagoaaoliveira1989/" target='_blank'>Thiago Araujo</a></span></span>
                     </div>
                 </div>
             </div>

@@ -2,7 +2,7 @@ import Banner from '../../assets/banner2.jpg';
 
 export const QuemSomosSection = () => {
     return (
-        <section id="quemsomos" className="w-[100%] h-[100%] mb-[30px]" >
+        <section id="quemsomos" className="w-[100%] h-[100%] mb-[30px] mt-[50px]" >
             <div className='container m-auto'>
 
                 <div className="flex flex-col items-center">

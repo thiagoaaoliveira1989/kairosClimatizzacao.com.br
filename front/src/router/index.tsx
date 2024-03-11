@@ -5,6 +5,7 @@ import { PrivateRoutes } from "./PrivateRoutes";
 import { ErrorPage } from "../pages/public/ErrorPage";
 import { HomePage } from "../pages/public/HomePage";
 import { LoginPage } from "../pages/public/LoginPage";
+import { Dashboard } from "../pages/admin/DashboardPage";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -14,7 +15,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/admin/login" element={<LoginPage />} />
           </Route>
           <Route element={<PrivateRoutes />} >
-
+            <Route path="/admin/dashboard" element={<Dashboard />} />
           </Route>
           <Route path="*" element={<ErrorPage />} />
         </Routes>
