@@ -17,7 +17,7 @@ class HandleErrorMiddleware {
             return res.status(403).json({ message: err.message });
         }
 
-        console.log(err);
+        console.log(err.message, err.name);
 
         return res.status(500).json({ error: "Internal server error." });
     };

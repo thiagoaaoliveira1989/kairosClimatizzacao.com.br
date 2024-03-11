@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id       BigInt  @id @default(autoincrement())
+  id       Int  @id @default(autoincrement())
   username String  @db.VarChar(255)
   email    String  @unique @db.VarChar(255)
   password String
@@ -23,8 +23,8 @@ model User {
 }
 
 model ContactForm {
-  id      BigInt @id @default(autoincrement())
-  userId  BigInt
+  id      Int @id @default(autoincrement())
+  userId  Int
   type    String // Pode ser 'general', 'schedule' ou 'emergency'
   details String
 
@@ -55,8 +55,8 @@ model ContactForm {
 }
 
 model IndividualClient {
-  id             BigInt   @id @default(autoincrement())
-  userId         BigInt   @unique
+  id             Int   @id @default(autoincrement())
+  userId         Int   @unique
   cpf            String   @unique @db.VarChar(14)
   dateOfBirth    DateTime
   address        String
@@ -77,8 +77,8 @@ model IndividualClient {
 }
 
 model CorporateClient {
-  id                BigInt @id @default(autoincrement())
-  userId            BigInt @unique
+  id                Int @id @default(autoincrement())
+  userId            Int @unique
   cnpj              String @unique @db.VarChar(18)
   stateRegistration String
   address           String
@@ -99,7 +99,7 @@ model CorporateClient {
 }
 
 model VisitSchedule {
-  id           BigInt   @id @default(autoincrement())
+  id           Int   @id @default(autoincrement())
   name         String
   date         DateTime
   time         String
@@ -115,11 +115,11 @@ model VisitSchedule {
   contactForm ContactForm @relation(fields: [contactFormId], references: [id])
 
   // Id do formulário de contato associado ao agendamento
-  contactFormId BigInt @unique
+  contactFormId Int @unique
 }
 
 model TechnicalSupportTicket {
-  id             BigInt   @id @default(autoincrement())
+  id             Int   @id @default(autoincrement())
   contractNumber String   @db.VarChar(20)
   name           String
   phoneNumber    String
@@ -131,5 +131,5 @@ model TechnicalSupportTicket {
   contactForm ContactForm? @relation(fields: [contactFormId], references: [id])
 
   // Id do formulário de contato associado ao chamado técnico
-  contactFormId BigInt?
+  contactFormId Int?
 }

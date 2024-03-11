@@ -4,7 +4,7 @@ export const userSchema = z.object({
     id: z.number().positive(),
     username: z.string().min(1),
     email: z.string().email().min(1),
-    password: z.string().min(8),
+    password: z.string().min(5),
     admin: z.boolean().default(false),
 })
 

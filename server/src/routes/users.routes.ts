@@ -1,16 +1,20 @@
 import { Router } from 'express';
 import { UsersController } from '../controllers/users.controller';
+import { auth } from '../middlewares/auth.middleware';
+import { ensure } from '../middlewares/ensure.middleware';
+import { createUserchema } from '../schemas/user.schemas';
 
 export const usersRouter = Router();
 
 const usersController = new UsersController();
 
-usersRouter.post('/api/users', usersController.createUser);
-usersRouter.get('/api/users', usersController.findAllUsers);
+usersRouter.post('', ensure.validBody(createUserchema), usersController.createUser);
+usersRouter.get('', auth.isAuthenticated, usersController.findAllUsers);
 
-usersRouter.post('/api/users/login', usersController.login);
+usersRouter.post('/login', usersController.login);
 
+usersRouter.use("/:userId", auth.isAuthenticated)
 
-usersRouter.get('/api/users/:id', usersController.findUser);
-usersRouter.delete('/api/users/:id', usersController.deleteUser);
-usersRouter.put('/api/users/:id', usersController.updateUser);
+usersRouter.get('/:userId', usersController.findUser);
+usersRouter.delete('/:userId', usersController.deleteUser);
+usersRouter.put('/:userId', usersController.updateUser);

@@ -28,7 +28,7 @@ class AuthMiddleware {
 
 }
 
-
+export const auth = new AuthMiddleware();
 
 
 

@@ -4,7 +4,6 @@ import "express-async-errors";
 import helmet from "helmet";
 import { handleErrors } from "./middlewares/handleErrors.middleware";
 import { mailRouter } from "./routes/mail.routes";
-import { agendamentoRouter } from "./routes/agendamento.routes";
 import { usersRouter } from "./routes/users.routes";
 
 export const app: Application = express();
@@ -15,8 +14,7 @@ app.use(helmet());
 app.use(json());
 
 app.use("/", mailRouter);
-app.use("/", agendamentoRouter);
-app.use("/", usersRouter);
+app.use("/api/users", usersRouter);
 
 
 app.use(handleErrors);

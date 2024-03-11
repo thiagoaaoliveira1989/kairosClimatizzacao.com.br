@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "User" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "username" VARCHAR(255) NOT NULL,
     "email" VARCHAR(255) NOT NULL,
     "password" TEXT NOT NULL,
@@ -11,8 +11,8 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "ContactForm" (
-    "id" BIGSERIAL NOT NULL,
-    "userId" BIGINT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
     "type" TEXT NOT NULL,
     "details" TEXT NOT NULL,
     "name" VARCHAR(255),
@@ -28,8 +28,8 @@ CREATE TABLE "ContactForm" (
 
 -- CreateTable
 CREATE TABLE "IndividualClient" (
-    "id" BIGSERIAL NOT NULL,
-    "userId" BIGINT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
     "cpf" VARCHAR(14) NOT NULL,
     "dateOfBirth" TIMESTAMP(3) NOT NULL,
     "address" TEXT NOT NULL,
@@ -43,8 +43,8 @@ CREATE TABLE "IndividualClient" (
 
 -- CreateTable
 CREATE TABLE "CorporateClient" (
-    "id" BIGSERIAL NOT NULL,
-    "userId" BIGINT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
     "cnpj" VARCHAR(18) NOT NULL,
     "stateRegistration" TEXT NOT NULL,
     "address" TEXT NOT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE "CorporateClient" (
 
 -- CreateTable
 CREATE TABLE "VisitSchedule" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
     "time" TEXT NOT NULL,
@@ -69,21 +69,21 @@ CREATE TABLE "VisitSchedule" (
     "landmark" TEXT NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "contactFormId" BIGINT NOT NULL,
+    "contactFormId" INTEGER NOT NULL,
 
     CONSTRAINT "VisitSchedule_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "TechnicalSupportTicket" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "contractNumber" VARCHAR(20) NOT NULL,
     "name" TEXT NOT NULL,
     "phoneNumber" TEXT NOT NULL,
     "reason" TEXT NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "contactFormId" BIGINT,
+    "contactFormId" INTEGER,
 
     CONSTRAINT "TechnicalSupportTicket_pkey" PRIMARY KEY ("id")
 );

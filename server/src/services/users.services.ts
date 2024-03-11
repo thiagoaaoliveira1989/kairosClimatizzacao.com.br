@@ -18,13 +18,14 @@ export class UsersServices {
 
 
     async findManyUser(): Promise<IReturnUser[]> {
-        const allUser = prisma.user.findMany()
+        const allUser = await prisma.user.findMany()
         return returnUserSchema.array().parse(allUser);
     }
 
     async findUser(userId: number): Promise<IReturnUser> {
-        const user = prisma.user.findMany({ where: { id: userId } })
-        return returnUserSchema.parse(user)
+        const user = await prisma.user.findFirst({ where: { id: userId } })
+        return returnUserSchema.parse(user);
+
     }
 
     async deleteUser(userId: number): Promise<void> {
