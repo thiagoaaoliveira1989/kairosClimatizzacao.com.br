@@ -38,6 +38,12 @@ class EnsureMiddleware {
 
         return next();
     };
+
+    public emailIsExists = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const { foundUser } = res.locals;
+
+    }
+
 }
 
 export const ensure = new EnsureMiddleware();

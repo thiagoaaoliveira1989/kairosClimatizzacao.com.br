@@ -8,14 +8,11 @@ datasource db {
 }
 
 model User {
-  id       Int  @id @default(autoincrement())
+  id       Int     @id @default(autoincrement())
   username String  @db.VarChar(255)
   email    String  @unique @db.VarChar(255)
   password String
   admin    Boolean @default(false)
-
-  // Relacionamento com os formulários de contato
-  contactForms ContactForm[]
 
   // Relacionamento com clientes pessoa física e pessoa jurídica
   individualClient IndividualClient?
@@ -23,40 +20,35 @@ model User {
 }
 
 model ContactForm {
-  id      Int @id @default(autoincrement())
-  userId  Int
-  type    String // Pode ser 'general', 'schedule' ou 'emergency'
-  details String
-
-  name        String? @db.VarChar(255)
-  email       String? @db.VarChar(255)
-  phoneNumber String? @db.VarChar(20)
-  subject     String? @db.VarChar(255)
-  message     String? @db.Text
-
-  // Relacionamento com o usuário que enviou o formulário
-  user User @relation(fields: [userId], references: [id], map: "contactForms_user")
-
-  // Relacionamento bidirecional com IndividualClient
-  individualClient IndividualClient? @relation(fields: [userId], references: [id], map: "contactForms_individualClient")
-  corporateClient  CorporateClient?  @relation(fields: [userId], references: [id], map: "contactForms_corporateClient")
+  id          Int     @id @default(autoincrement())
+  type        String
+  details     String
+  name        String?
+  email       String?
+  phoneNumber String?
+  subject     String?
+  message     String?
 
   // Relacionamento com o agendamento associado ao formulário de contato
-  visitSchedule          VisitSchedule?
+  visitSchedule          VisitSchedule?           @relation(fields: [visitScheduleId], references: [id])
   // Relacionamento com o agendamento suporte técnico
   TechnicalSupportTicket TechnicalSupportTicket[]
 
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  createdAt          DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt          DateTime          @default(now()) @updatedAt @db.Timestamp(6)
+  IndividualClient   IndividualClient? @relation(fields: [individualClientId], references: [id])
+  individualClientId Int?
+  CorporateClient    CorporateClient?  @relation(fields: [corporateClientId], references: [id])
+  corporateClientId  Int?
+  visitScheduleId    Int?
 
   // Índices para melhorar a consulta
-  @@index([userId], name: "idx_userId")
   @@index([type], name: "idx_type")
 }
 
 model IndividualClient {
-  id             Int   @id @default(autoincrement())
-  userId         Int   @unique
+  id             Int      @id @default(autoincrement())
+  userId         Int      @unique
   cpf            String   @unique @db.VarChar(14)
   dateOfBirth    DateTime
   address        String
@@ -77,8 +69,8 @@ model IndividualClient {
 }
 
 model CorporateClient {
-  id                Int @id @default(autoincrement())
-  userId            Int @unique
+  id                Int    @id @default(autoincrement())
+  userId            Int    @unique
   cnpj              String @unique @db.VarChar(18)
   stateRegistration String
   address           String
@@ -99,7 +91,7 @@ model CorporateClient {
 }
 
 model VisitSchedule {
-  id           Int   @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   name         String
   date         DateTime
   time         String
@@ -112,14 +104,11 @@ model VisitSchedule {
   updatedAt    DateTime @default(now()) @updatedAt @db.Timestamp(6)
 
   // Relacionamento com o formulário de contato associado ao agendamento
-  contactForm ContactForm @relation(fields: [contactFormId], references: [id])
-
-  // Id do formulário de contato associado ao agendamento
-  contactFormId Int @unique
+  contactForm ContactForm[]
 }
 
 model TechnicalSupportTicket {
-  id             Int   @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   contractNumber String   @db.VarChar(20)
   name           String
   phoneNumber    String
@@ -128,8 +117,6 @@ model TechnicalSupportTicket {
   updatedAt      DateTime @default(now()) @updatedAt @db.Timestamp(6)
 
   // Relacionamento com o formulário de contato associado ao chamado técnico
-  contactForm ContactForm? @relation(fields: [contactFormId], references: [id])
-
-  // Id do formulário de contato associado ao chamado técnico
+  contactForm   ContactForm? @relation(fields: [contactFormId], references: [id])
   contactFormId Int?
 }

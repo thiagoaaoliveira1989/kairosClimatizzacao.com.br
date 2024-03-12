@@ -1,6 +1,6 @@
-import { z } from 'zod';
-import { contactFormSchema } from './contactFormSchema';
+import { z } from "zod";
 
+// Esquema para representar o agendamento de visitas
 export const visitScheduleSchema = z.object({
     id: z.number().positive(),
     name: z.string().min(1),
@@ -11,12 +11,13 @@ export const visitScheduleSchema = z.object({
     neighborhood: z.string(),
     city: z.string(),
     landmark: z.string(),
-    contactForm: contactFormSchema.nullable(),
-    contactFormId: z.number().positive().nullable(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
 });
 
+// Esquema para criar um agendamento de visita
 export const createVisitScheduleSchema = visitScheduleSchema.omit({ id: true });
 
-export const updateVisitScheduleSchema = createVisitScheduleSchema.partial();
+// Esquema para atualizar um agendamento de visita
+export const updateVisitScheduleSchema = visitScheduleSchema.partial();
+
+// Esquema para retornar um agendamento de visita
+export const returnVisitScheduleSchema = visitScheduleSchema;
