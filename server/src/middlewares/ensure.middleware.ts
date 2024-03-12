@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { AnyZodObject, ZodError } from "zod";
 import { AppError } from "../errors/AppError";
+import { prisma } from "../database";
 
 class EnsureMiddleware {
 
@@ -18,7 +19,25 @@ class EnsureMiddleware {
             }
         };
 
+    public paramsUserIdExists = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> => {
+        const { userId } = req.params;
 
+        const foundUser = await prisma.user.findFirst({
+            where: { id: Number(userId) }
+        });
+
+        if (!foundUser) {
+            throw new AppError("User not found!", 404);
+        }
+
+        res.locals = { ...res.locals, foundUser };
+
+        return next();
+    };
 }
 
 export const ensure = new EnsureMiddleware();

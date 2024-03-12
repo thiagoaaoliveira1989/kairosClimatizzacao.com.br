@@ -2,7 +2,6 @@ import { useContext, useState } from "react";
 import { UserContext } from "../../../providers/UserContext";
 import Logo from '../../../assets/logo2.png';
 import Avatar from '../../../assets/avatar.png';
-import { IUsers } from "../../../interfaces/user.interface";
 import { IoCalendarNumberOutline, IoCalendarOutline, IoImagesOutline, IoPeopleOutline, IoPerson } from "react-icons/io5";
 import { ListUsers } from "../../../components/Users/ListUsers";
 
@@ -10,9 +9,8 @@ import { ListUsers } from "../../../components/Users/ListUsers";
 export const Dashboard = () => {
     const [handleListUsers, setHandleListUsers] = useState(false);
 
-    const context = useContext(UserContext);
+    const { userLogout, user } = useContext(UserContext);
 
-    const { userLogout, user } = context as { user: IUsers, userLogout: () => void };
 
 
 
@@ -31,7 +29,7 @@ export const Dashboard = () => {
                     <div className="flex gap-4 text-white px-[3rem]">
                         <img src={Avatar} className="w-[50px]" alt="" />
                         <div className="flex flex-col gap-4">
-                            <p> {user?.name} </p>
+                            <p> {user?.username} </p>
                             <p> {user?.email} </p>
                         </div>
                     </div>
@@ -48,7 +46,7 @@ export const Dashboard = () => {
                 <section className="bg-gray-300 w-[80vw] h-full">
                     <div className="p-[2rem] flex flex-col gap-2 items-start">
                         <h1 className="flex center m-auto items-center text-[3rem] font-bold">Dashboard</h1>
-                        <p className="text-[1.2rem] ">Seja bem vindo(a) <span className="font-bold">{user?.name}</span></p>
+                        <p className="text-[1.2rem] ">Seja bem vindo(a) <span className="font-bold">{user?.username}</span></p>
                     </div>
                     {handleListUsers === true ? <ListUsers /> : null}
                 </section>

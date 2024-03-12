@@ -1,103 +1,219 @@
-// UserContext.tsx
-
-import React, { createContext, ReactNode, useEffect, useState } from "react";
+import { ReactNode, createContext, useEffect, useState } from "react";
 import api from "../services/api";
-import { IUsers } from "../interfaces/user.interface";
+import { ICreatedUsers, ILogin, IUsers } from "../interfaces/user.interface";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-interface UserProviderProps {
-    children: ReactNode;
-}
-
 interface UserContextProps {
-    userLogin: (formData: IUsers) => void;
-    loading: boolean;
-    user: IUsers | null;
-    listUsers: {
-        length: number;
-        users: IUsers[];
-    } | undefined;
-    userLogout: () => void;
+  user: IUsers | null;
+  userList: IUsers[];
+  loading: boolean;
+  userLogin: (formData: ILogin) => void;
+  userCreate: (FormData: ICreatedUsers) => void;
+  userUpdate: (formData: IUsers, userId: number) => void;
+  userDelete: (userId: number) => void;
+  userLogout: () => void;
+  openModal: () => void;
+  showModal: boolean;
 }
 
 export const UserContext = createContext<UserContextProps>({
-    userLogin: () => { },
-    loading: false,
-    user: null,
-    listUsers: undefined,
-    userLogout: () => { },
+  user: null,
+  userList: [],
+  loading: false,
+  showModal: false,
+  openModal: () => {},
+  userLogin: () => {},
+  userCreate: () => {},
+  userLogout: () => {},
+  userUpdate: () => {},
+  userDelete: () => {},
 });
 
+interface UserProviderProps {
+  children: ReactNode;
+}
+
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-    const [loading, setLoading] = useState(false);
-    const [loadingUser, setLoadingUser] = useState(true);
-    const [listUsers, setListUsers] = useState<{ length: number; users: IUsers[] } | undefined>(undefined);
-    const [user, setUser] = useState<IUsers | null>(() => {
-        const storedUser = localStorage.getItem('@Token');
-        return storedUser ? JSON.parse(storedUser) : null;
-    });
+  const [userList, setUserList] = useState<IUsers[]>([]);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [shouldFetchUsers, setShouldFetchUsers] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem('@Token');
-        if (storedUser) {
-            const parsedUser = JSON.parse(storedUser).user;
-            setUser(parsedUser);
-        }
-        setLoadingUser(false);
-    }, []);
+  const openModal = () => {
+    setShowModal(!showModal);
+  };
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const userLogin = async (formData: IUsers) => {
+  useEffect(() => {
+    const autoLogin = async () => {
+      const token = JSON.parse(localStorage.getItem("@Token") as string);
+
+      setLoading(true);
+      if (token) {
         try {
-            setLoading(true);
-            const { data } = await api.post('/users/login', formData);
+          const { data } = await api.get("/users/profile", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
-            localStorage.setItem('@Token', JSON.stringify(data));
-
-            toast.success("Login realizado com sucesso!", {
-                className: "toast-custom-background",
-            });
-
-            navigate("/admin/dashboard");
+          setUser(data);
+          setShouldFetchUsers(true); // Force fetching users after auto-login
         } catch (error) {
-            console.error("Email ou Senha incorretos");
+          console.error("Error ao realizar auto-login", error);
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
+      } else {
+        setLoading(false);
+      }
+    };
+
+    autoLogin();
+  }, []);
+
+  useEffect(() => {
+    if (shouldFetchUsers) {
+      const getUsers = async () => {
+        const token = JSON.parse(localStorage.getItem("@Token") as string);
+        if (token) {
+          try {
+            const { data } = await api.get("/users", {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+            setUserList(data);
+          } catch (error) {
+            console.log(error);
+          } finally {
+            setShouldFetchUsers(false);
+          }
+        }
+      };
+      getUsers();
     }
+  }, [shouldFetchUsers]);
 
-    const userLogout = () => {
-        setUser(null);
-        localStorage.removeItem('@Token');
-        navigate("/");
+  const userLogin = async (formData: ILogin) => {
+    try {
+      setLoading(true);
+      const { data } = await api.post("/users/login", formData);
+
+      localStorage.setItem("@Token", JSON.stringify(data.accessToken));
+
+      setUser(data.user);
+      toast.success("Login realizado com sucesso!", {
+        className: "toast-custom-background",
+      });
+
+      navigate("/admin/dashboard");
+    } catch (error) {
+      toast.error("Email ou senha incorretos!", {
+        className: "toast-custom-background",
+      });
+    } finally {
+      setLoading(false);
     }
+  };
 
+  const userLogout = () => {
+    setUser(null);
+    localStorage.removeItem("@Token");
+    navigate("/");
+  };
 
-    useEffect(() => {
+  const userUpdate = async (formData: IUsers, userId: number) => {
+    const token = JSON.parse(localStorage.getItem("@Token") as string);
 
-      
-        const findListUsers = async () => {
-            try {
-                setLoading(true);
-                const { data } = await api.get('/users');
-                setListUsers(data);
-            } catch (error) {
-                console.error("Erro interno do servidor", error);
-            } finally {
-                setLoading(false);
-            }
-        }
+    if (token) {
+      try {
+        const user = {
+          username: formData.username,
+          email: formData.email,
+          admin: formData.admin,
+        };
 
-        if (!listUsers?.length) {
-            findListUsers();
-        }
-    }, [listUsers]);
+        const { data } = await api.put(`/users/${formData.id}`, user, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-    return (
-        <UserContext.Provider value={{ userLogin, loading, user, listUsers, userLogout }}>
-            {!loadingUser && children}
-        </UserContext.Provider>
-    );
+        // Update the userList by mapping through it and replacing the updated user
+        setUserList((prevUserList) =>
+          prevUserList.map((userItem) =>
+            userItem.id === userId ? { ...userItem, ...data } : userItem
+          )
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const userDelete = async (userId: number) => {
+    const token = JSON.parse(localStorage.getItem("@Token") as string);
+    const id = Number(userId);
+    if (token && user) {
+      try {
+        await api.delete(`/users/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // Update the userList by filtering out the deleted user
+        setUserList((prevUserList) =>
+          prevUserList.filter((userItem) => userItem.id !== userId)
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const userCreate = async (formData: ICreatedUsers) => {
+    const token = JSON.parse(localStorage.getItem("@Token") as string);
+
+    try {
+      const { data } = await api.post("/users", formData);
+
+      console.log(data);
+
+      // Recupere a lista atualizada de usuários após a criação bem-sucedida
+      const updatedUserList = await api.get("/users", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Certifique-se de substituir 'token' pela sua lógica de obtenção do token
+        },
+      });
+
+      // Atualize o estado 'userList' com a nova lista
+      setUserList(updatedUserList.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <UserContext.Provider
+      value={{
+        user,
+        userList,
+        loading,
+        userLogin,
+        userLogout,
+        userUpdate,
+        userDelete,
+        userCreate,
+        openModal,
+        showModal,
+      }}
+    >
+      {children}
+    </UserContext.Provider>
+  );
 };

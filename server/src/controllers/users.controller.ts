@@ -14,7 +14,8 @@ export class UsersController {
     }
 
     findUser = async (req: Request, res: Response): Promise<Response> => {
-        const user = await this.usersService.findUser(Number(req.params.userId));
+        const userId = res.locals.decoded.sub
+        const user = await this.usersService.findUser(Number(userId));
         return res.status(201).json(user);
     };
 

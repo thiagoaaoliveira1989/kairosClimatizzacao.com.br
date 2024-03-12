@@ -1,3 +1,4 @@
+import { ToastContainer } from "react-toastify"
 import AppRoutes from "./router"
 
 function App() {
@@ -6,6 +7,7 @@ function App() {
   return (
     <>
       <AppRoutes />
+      <ToastContainer />
     </>
   )
 }

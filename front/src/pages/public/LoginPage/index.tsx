@@ -1,3 +1,4 @@
+import { ToastContainer } from "react-toastify"
 import { Footer } from "../../../components/Footer"
 import { LoginForm } from "../../../components/Forms/LoginForm"
 import { Header } from "../../../components/Header"
@@ -16,6 +17,7 @@ export const LoginPage = () => {
 
             </main>
             <Footer />
+            <ToastContainer />
         </>
     )
 }
