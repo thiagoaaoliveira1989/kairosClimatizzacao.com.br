@@ -3,6 +3,7 @@ import api from "../services/api";
 import { ICreatedUsers, ILogin, IUsers } from "../interfaces/user.interface";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 
 interface UserContextProps {
   user: IUsers | null;
@@ -22,12 +23,12 @@ export const UserContext = createContext<UserContextProps>({
   userList: [],
   loading: false,
   showModal: false,
-  openModal: () => {},
-  userLogin: () => {},
-  userCreate: () => {},
-  userLogout: () => {},
-  userUpdate: () => {},
-  userDelete: () => {},
+  openModal: () => { },
+  userLogin: () => { },
+  userCreate: () => { },
+  userLogout: () => { },
+  userUpdate: () => { },
+  userDelete: () => { },
 });
 
 interface UserProviderProps {
@@ -38,8 +39,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [userList, setUserList] = useState<IUsers[]>([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [shouldFetchUsers, setShouldFetchUsers] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const token = JSON.parse(localStorage.getItem("@Token") as string);
 
   const openModal = () => {
     setShowModal(!showModal);
@@ -48,36 +49,40 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const autoLogin = async () => {
-      const token = JSON.parse(localStorage.getItem("@Token") as string);
 
-      setLoading(true);
-      if (token) {
+    if (token) {
+      const autoLogin = async () => {
+        setLoading(true);
+
+        if (!token) {
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+
         try {
           const { data } = await api.get("/users/profile", {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
-
           setUser(data);
-          setShouldFetchUsers(true); // Force fetching users after auto-login
         } catch (error) {
           console.error("Error ao realizar auto-login", error);
         } finally {
           setLoading(false);
         }
-      } else {
-        setLoading(false);
-      }
-    };
+      };
 
-    autoLogin();
-  }, []);
+      autoLogin();
 
-  useEffect(() => {
-    if (shouldFetchUsers) {
+    }
+
+
+
+    if (token) {
       const getUsers = async () => {
+        setLoading(true);
         const token = JSON.parse(localStorage.getItem("@Token") as string);
         if (token) {
           try {
@@ -90,27 +95,43 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           } catch (error) {
             console.log(error);
           } finally {
-            setShouldFetchUsers(false);
+            setLoading(false);
           }
         }
       };
       getUsers();
     }
-  }, [shouldFetchUsers]);
+
+    return () => {
+      setUser(null)
+    }
+  }, [token]);
+
+
 
   const userLogin = async (formData: ILogin) => {
     try {
       setLoading(true);
+
       const { data } = await api.post("/users/login", formData);
 
-      localStorage.setItem("@Token", JSON.stringify(data.accessToken));
+      if (data.user.admin === true) {
+        localStorage.setItem("@Token", JSON.stringify(data.accessToken));
 
-      setUser(data.user);
-      toast.success("Login realizado com sucesso!", {
-        className: "toast-custom-background",
-      });
+        setUser(data.user);
+        toast.success("Login realizado com sucesso!", {
+          className: "toast-custom-background",
+        });
 
-      navigate("/admin/dashboard");
+        navigate("/admin/dashboard");
+      } else {
+        toast.error("Permissão insuficiente para fazer Login!", {
+          className: "toast-custom-background",
+        });
+
+        navigate("/admin/login");
+
+      }
     } catch (error) {
       toast.error("Email ou senha incorretos!", {
         className: "toast-custom-background",
@@ -127,9 +148,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   };
 
   const userUpdate = async (formData: IUsers, userId: number) => {
-    const token = JSON.parse(localStorage.getItem("@Token") as string);
+
+
 
     if (token) {
+      const decodedToken = jwtDecode(token);
+      const tokenId = Number(decodedToken.sub);
+
       try {
         const user = {
           username: formData.username,
@@ -143,36 +168,68 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           },
         });
 
+        toast.success("Usuario Atualizado com sucesso!", {
+          className: "toast-custom-background",
+        });
+
+        // Atualize o estado 'user' se o usuário que está sendo atualizado for o usuário atualmente logado
+
+        if (data.id === tokenId) {
+          setUser(data);
+
+        }
+
         // Update the userList by mapping through it and replacing the updated user
         setUserList((prevUserList) =>
           prevUserList.map((userItem) =>
             userItem.id === userId ? { ...userItem, ...data } : userItem
           )
         );
+
+
       } catch (error) {
-        console.log(error);
+        toast.error("Error ao atualizar usuário!", {
+          className: "toast-custom-background",
+        });
       }
     }
   };
 
   const userDelete = async (userId: number) => {
-    const token = JSON.parse(localStorage.getItem("@Token") as string);
-    const id = Number(userId);
-    if (token && user) {
-      try {
-        await api.delete(`/users/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
 
-        // Update the userList by filtering out the deleted user
-        setUserList((prevUserList) =>
-          prevUserList.filter((userItem) => userItem.id !== userId)
-        );
-      } catch (error) {
-        console.log(error);
+    const id = Number(userId);
+    const decodedToken = jwtDecode(token);
+    const tokenId = Number(decodedToken.sub);
+    if (userId !== tokenId) {
+      if (token && user) {
+        try {
+          await api.delete(`/users/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          toast.success("Usuario Deletado com sucesso!", {
+            className: "toast-custom-background",
+          });
+
+
+          // Update the userList by filtering out the deleted user
+          setUserList((prevUserList) =>
+            prevUserList.filter((userItem) => userItem.id !== userId)
+          );
+        } catch (error) {
+          toast.error("Error ao excluir usuário!", {
+            className: "toast-custom-background",
+          });
+
+        }
       }
+    } else {
+      toast.error("Não é possivel excluir seu proprio usuario nessa página!", {
+        className: "toast-custom-background",
+      });
+
     }
   };
 
@@ -191,9 +248,16 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         },
       });
 
+      toast.success("Usuário criado com sucesso!", {
+        className: "toast-custom-background",
+      });
       // Atualize o estado 'userList' com a nova lista
       setUserList(updatedUserList.data);
     } catch (error) {
+      toast.error("Error ao criar usuário!", {
+        className: "toast-custom-background",
+      });
+
       console.log(error);
     }
   };

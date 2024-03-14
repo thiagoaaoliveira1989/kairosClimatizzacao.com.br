@@ -13,9 +13,10 @@ usersRouter.post('', ensure.validBody(createUserchema), usersController.createUs
 usersRouter.get('', auth.isAuthenticated, permission.isAdminOrOwnerUser, usersController.findAllUsers);
 
 usersRouter.post('/login', usersController.login);
-usersRouter.get('/profile', auth.isAuthenticated, permission.isAdminOrOwnerUser, usersController.findUser);
+usersRouter.get('/profile', auth.isAuthenticated, permission.isAdminOrOwnerUser, usersController.profile);
 
 usersRouter.use("/:userId", ensure.paramsUserIdExists, auth.isAuthenticated, permission.isAdminOrOwnerUser)
 
+usersRouter.get('/:userId', usersController.findUserId);
 usersRouter.delete('/:userId', usersController.deleteUser);
 usersRouter.put('/:userId', usersController.updateUser);

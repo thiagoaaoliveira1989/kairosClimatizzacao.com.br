@@ -21,7 +21,14 @@ export class UsersServices {
         return returnUserSchema.array().parse(allUser);
     }
 
-    async findUser(userId: number): Promise<IReturnUser> {
+    async findUserId(userId: number): Promise<IReturnUser> {
+        const user = await prisma.user.findFirst({ where: { id: userId } })
+        return returnUserSchema.parse(user);
+
+    }
+
+
+    async profile(userId: number): Promise<IReturnUser> {
         const user = await prisma.user.findFirst({ where: { id: userId } })
         return returnUserSchema.parse(user);
 

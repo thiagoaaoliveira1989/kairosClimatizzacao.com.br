@@ -1,6 +1,5 @@
 import { useContext, useState } from "react";
 import { IUsers } from "../../../interfaces/user.interface";
-import { MdDeleteForever, MdEdit } from "react-icons/md";
 import { UserContext } from "../../../providers/UserContext";
 import CreateUserModal from "../modal/createdUser";
 
@@ -29,7 +28,6 @@ export const ListUsers = () => {
 
   const handleUpdateClick = () => {
     if (editedUser && userEditId !== null) {
-      console.log(editedUser);
       userUpdate(editedUser, userEditId);
       setUserEditId(null);
     }
@@ -39,123 +37,146 @@ export const ListUsers = () => {
     setUserEditId(null);
   };
 
+  const sortedUserList = [...userList].sort((a, b) => a.id - b.id);
+
   return (
     <>
-      <div className="p-[2rem] flex flex-col gap-2 items-start">
+      <div className="p-8 flex flex-col gap-4 items-start w-full">
         <div className="flex w-full justify-between">
-          <h1 className="text-[2rem] text-primary font-bold">Usuários</h1>
+          <h1 className="text-2xl text-primary font-bold">Usuários</h1>
           <button
-            className="bg-secundary p-4 rounded-2xl text-[1.5rem] text-white hover:bg-blue-300 hover:text-primary font-bold"
-            onClick={() => openModal()}
-          >
+            className="bg-secondary py-2 px-4 rounded-lg text-lg text-white hover:bg-blue-300 hover:text-primary bg-primary font-bold"
+            onClick={() => openModal()}>
             Criar Novo Usuário
           </button>
         </div>
 
-        {userList?.length > 0 ? (
-          <table className="w-full" style={{ borderCollapse: "collapse" }}>
-            <thead>
-              <tr className="">
-                <th className="px-4 py-2  text-start text-[1.2rem] font-semibold">
-                  ID
-                </th>
-                <th className="px-4 py-2  text-start text-[1.2rem] font-semibold">
-                  Nome
-                </th>
-                <th className="px-4 py-2  text-start text-[1.2rem] font-semibold">
-                  E-mail
-                </th>
-                <th className="px-4 py-2  text-start text-[1.2rem] font-semibold">
-                  Admin
-                </th>
-                <th className="px-4 py-2  text-start text-[1.2rem] font-semibold">
-                  Ações
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {userList?.map((user: IUsers) => (
-                <tr key={user?.id}>
-                  <td className="px-4 py-2  text-start">{user?.id}</td>
-                  <td className="px-4 py-2  text-start">
-                    {isEditing(user.id) ? (
-                      <input
-                        type="text"
-                        value={editedUser?.username}
-                        onChange={(e) =>
-                          setEditedUser({
-                            ...editedUser!,
-                            username: e.target.value,
-                          })
-                        }
-                      />
-                    ) : (
-                      user?.username
-                    )}
-                  </td>
-                  <td className="px-4 py-2  text-start">
-                    {isEditing(user.id) ? (
-                      <input
-                        type="text"
-                        value={editedUser?.email}
-                        onChange={(e) =>
-                          setEditedUser(() => ({
-                            ...editedUser!,
-                            email: e.target.value,
-                          }))
-                        }
-                      />
-                    ) : (
-                      user?.email
-                    )}
-                  </td>
-                  <td className="px-4 py-2  text-start">
-                    {isEditing(user.id) ? (
-                      <input
-                        type="checkbox"
-                        checked={editedUser?.admin || false}
-                        onChange={(e) =>
-                          setEditedUser(() => ({
-                            ...editedUser!,
-                            admin: e.target.checked,
-                          }))
-                        }
-                      />
-                    ) : user?.admin ? (
-                      "Sim"
-                    ) : (
-                      "Não"
-                    )}
-                  </td>
-                  <td className="px-4 py-2  text-start flex gap-5">
-                    {isEditing(user.id) ? (
-                      <>
-                        <button onClick={handleUpdateClick}>Salvar</button>
-                        <button onClick={handleCancelClick}>Cancelar</button>
-                      </>
-                    ) : (
-                      <>
-                        <button onClick={() => handleEditClick(user)}>
-                          <MdEdit size={25} color={"green"} />
-                        </button>
-                        <button onClick={() => userDelete(user.id)}>
-                          <MdDeleteForever size={25} color={"red"} />
-                        </button>
-                      </>
-                    )}
-                  </td>
+        {sortedUserList?.length > 0 ? (
+          <div className="overflow-x-auto w-full">
+            <table className="w-full bg-white shadow-md rounded-lg overflow-hidden">
+              <thead className="bg-gray-100">
+                <tr className="">
+                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                    ID
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                    Nome
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                    E-mail
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                    Admin
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                    Ações
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {sortedUserList?.map((user: IUsers) => (
+                  <tr key={user?.id}>
+                    <td className="px-4 py-2 text-left text-sm text-gray-900">
+                      {user?.id}
+                    </td>
+                    <td className="px-4 py-2 text-left text-sm text-gray-900">
+                      {isEditing(user.id) ? (
+                        <input
+                          type="text"
+                          value={editedUser?.username}
+                          onChange={(e) =>
+                            setEditedUser({
+                              ...editedUser!,
+                              username: e.target.value,
+                            })
+                          }
+                          className="border border-gray-300 rounded-lg p-1"
+                        />
+                      ) : (
+                        user?.username
+                      )}
+                    </td>
+                    <td className="px-4 py-2 text-left text-sm text-gray-900">
+                      {isEditing(user.id) ? (
+                        <input
+                          type="text"
+                          value={editedUser?.email}
+                          onChange={(e) =>
+                            setEditedUser(() => ({
+                              ...editedUser!,
+                              email: e.target.value,
+                            }))
+                          }
+                          className="border border-gray-300 rounded-lg p-1"
+                        />
+                      ) : (
+                        user?.email
+                      )}
+                    </td>
+                    <td className="px-4 py-2 text-left text-sm text-gray-900">
+                      {isEditing(user.id) ? (
+                        <input
+                          type="checkbox"
+                          checked={editedUser?.admin || false}
+                          onChange={(e) =>
+                            setEditedUser(() => ({
+                              ...editedUser!,
+                              admin: e.target.checked,
+                            }))
+                          }
+                        />
+                      ) : user?.admin ? (
+                        "Sim"
+                      ) : (
+                        "Não"
+                      )}
+                    </td>
+                    <td className="px-4 py-2 text-left text-sm text-gray-900">
+                      {isEditing(user.id) ? (
+                        <>
+                          <button
+                            onClick={handleUpdateClick}
+                            className="bg-blue-500 text-white px-4 py-1 rounded-lg mr-2 hover:bg-blue-600"
+                          >
+                            Salvar
+                          </button>
+                          <button
+                            onClick={handleCancelClick}
+                            className="bg-red-500 text-white px-4 py-1 rounded-lg hover:bg-red-600"
+                          >
+                            Cancelar
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleEditClick(user)}
+                            className="bg-green-500 text-white font-bold px-4 py-1 rounded-lg mr-2 hover:bg-green-600">
+                            Editar
+                          </button>
+                          <button
+                            onClick={() => userDelete(user.id)}
+                            className="bg-red-500 text-white font-bold px-4 py-1 rounded-lg mr-2 hover:bg-red-600">
+                            Deletar
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <div>Nenhum usuário encontrado.</div>
         )}
       </div>
 
-      {showModal === true ? <div className='mt-[-300px] w-[100%]'> <CreateUserModal /> </div> : null}
-
-
+      {showModal === true ? (
+        <div className="mt-[-300px] w-[100%]">
+          <CreateUserModal />
+        </div>
+      ) : null}
     </>
   );
 };

@@ -13,9 +13,15 @@ export class UsersController {
         return res.status(200).json(await this.usersService.findManyUser());
     }
 
-    findUser = async (req: Request, res: Response): Promise<Response> => {
+    findUserId = async (req: Request, res: Response): Promise<Response> => {
+        const { userId } = req.params
+        const user = await this.usersService.profile(Number(userId));
+        return res.status(201).json(user);
+    };
+
+    profile = async (req: Request, res: Response): Promise<Response> => {
         const userId = res.locals.decoded.sub
-        const user = await this.usersService.findUser(Number(userId));
+        const user = await this.usersService.profile(Number(userId));
         return res.status(201).json(user);
     };
 

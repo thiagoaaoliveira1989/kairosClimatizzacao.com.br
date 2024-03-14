@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { createIndividualClientSchema, individualClientSchema, updateIndividualClientSchema } from "../schemas/individualClient.schema";
+import { createIndividualClientSchema, individualClientSchema, returnIndividualClientSchema, updateIndividualClientSchema } from "../schemas/individualClient.schema";
 
-export type IReturnIndividualClient = z.infer<typeof individualClientSchema>;
+export type IReturnIndividualClient = z.infer<typeof returnIndividualClientSchema>;
 
 
 export type ICreateIndividualClient = z.infer<typeof createIndividualClientSchema>;
