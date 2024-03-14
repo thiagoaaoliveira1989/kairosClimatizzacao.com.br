@@ -16,7 +16,6 @@ export class UsersServices {
         return returnUserSchema.parse(newUser);
     }
 
-
     async findManyUser(): Promise<IReturnUser[]> {
         const allUser = await prisma.user.findMany()
         return returnUserSchema.array().parse(allUser);
@@ -31,7 +30,6 @@ export class UsersServices {
     async deleteUser(userId: number): Promise<void> {
         await prisma.user.delete({ where: { id: userId } })
     }
-
 
     async updateUser(payload: IUpdateUser, userId: number): Promise<IReturnUser> {
         if (payload?.password) {

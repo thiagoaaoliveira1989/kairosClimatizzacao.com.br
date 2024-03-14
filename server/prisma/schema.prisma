@@ -14,52 +14,40 @@ model User {
   password String
   admin    Boolean @default(false)
 
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
   // Relacionamento com clientes pessoa física e pessoa jurídica
   individualClient IndividualClient?
   corporateClient  CorporateClient?
+  media            Media[]
 }
 
 model ContactForm {
-  id          Int     @id @default(autoincrement())
-  type        String
-  details     String
-  name        String?
-  email       String?
-  phoneNumber String?
-  subject     String?
-  message     String?
+  id          Int    @id @default(autoincrement())
+  name        String
+  email       String
+  phoneNumber String
+  subject     String
+  message     String
 
-  // Relacionamento com o agendamento associado ao formulário de contato
-  visitSchedule          VisitSchedule?           @relation(fields: [visitScheduleId], references: [id])
-  // Relacionamento com o agendamento suporte técnico
-  TechnicalSupportTicket TechnicalSupportTicket[]
-
-  createdAt          DateTime          @default(now()) @db.Timestamp(6)
-  updatedAt          DateTime          @default(now()) @updatedAt @db.Timestamp(6)
-  IndividualClient   IndividualClient? @relation(fields: [individualClientId], references: [id])
-  individualClientId Int?
-  CorporateClient    CorporateClient?  @relation(fields: [corporateClientId], references: [id])
-  corporateClientId  Int?
-  visitScheduleId    Int?
-
-  // Índices para melhorar a consulta
-  @@index([type], name: "idx_type")
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
 }
 
 model IndividualClient {
   id             Int      @id @default(autoincrement())
-  userId         Int      @unique
   cpf            String   @unique @db.VarChar(14)
   dateOfBirth    DateTime
   address        String
   phoneNumber    String
   contractNumber String   @unique @db.VarChar(20) // Novo campo para número de contrato
 
-  // Relacionamento com os formulários de contato
-  contactForms ContactForm[]
-
   // Relacionamento com o usuário associado
-  user User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  technicalSupport TechnicalSupportTicket[]
 
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
@@ -70,18 +58,17 @@ model IndividualClient {
 
 model CorporateClient {
   id                Int    @id @default(autoincrement())
-  userId            Int    @unique
   cnpj              String @unique @db.VarChar(18)
   stateRegistration String
   address           String
   phoneNumber       String
   contractNumber    String @unique @db.VarChar(20) // Novo campo para número de contrato
 
-  // Relacionamento com os formulários de contato
-  contactForms ContactForm[]
-
   // Relacionamento com o usuário associado
-  user User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  technicalSupport TechnicalSupportTicket[]
 
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
@@ -102,9 +89,6 @@ model VisitSchedule {
   landmark     String
   createdAt    DateTime @default(now()) @db.Timestamp(6)
   updatedAt    DateTime @default(now()) @updatedAt @db.Timestamp(6)
-
-  // Relacionamento com o formulário de contato associado ao agendamento
-  contactForm ContactForm[]
 }
 
 model TechnicalSupportTicket {
@@ -116,7 +100,22 @@ model TechnicalSupportTicket {
   createdAt      DateTime @default(now()) @db.Timestamp(6)
   updatedAt      DateTime @default(now()) @updatedAt @db.Timestamp(6)
 
-  // Relacionamento com o formulário de contato associado ao chamado técnico
-  contactForm   ContactForm? @relation(fields: [contactFormId], references: [id])
-  contactFormId Int?
+  // Adiciona uma relação para o cliente individual
+  contractNumberIndivClient String?           @unique
+  individualClient          IndividualClient? @relation(fields: [contractNumberIndivClient], references: [contractNumber])
+
+  // Adiciona uma relação para o cliente corporativo
+  contractNumberCorpClient String?          @unique
+  corporateClient          CorporateClient? @relation(fields: [contractNumberCorpClient], references: [contractNumber])
+}
+
+model Media {
+  id        Int      @id @default(autoincrement())
+  fileType  String // Pode ser 'photo', 'video', ou outros tipos de mídia
+  fileName  String // Nome do arquivo
+  filePath  String // Caminho do arquivo (ou URL se estiver hospedado em outro lugar)
+  ownerId   Int // ID do usuário proprietário da mídia
+  owner     User     @relation(fields: [ownerId], references: [id])
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
 }

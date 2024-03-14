@@ -5,6 +5,8 @@ CREATE TABLE "User" (
     "email" VARCHAR(255) NOT NULL,
     "password" TEXT NOT NULL,
     "admin" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -12,14 +14,11 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "ContactForm" (
     "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "type" TEXT NOT NULL,
-    "details" TEXT NOT NULL,
-    "name" VARCHAR(255),
-    "email" VARCHAR(255),
-    "phoneNumber" VARCHAR(20),
-    "subject" VARCHAR(255),
-    "message" TEXT,
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "phoneNumber" TEXT NOT NULL,
+    "subject" TEXT NOT NULL,
+    "message" TEXT NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -29,12 +28,12 @@ CREATE TABLE "ContactForm" (
 -- CreateTable
 CREATE TABLE "IndividualClient" (
     "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
     "cpf" VARCHAR(14) NOT NULL,
     "dateOfBirth" TIMESTAMP(3) NOT NULL,
     "address" TEXT NOT NULL,
     "phoneNumber" TEXT NOT NULL,
     "contractNumber" VARCHAR(20) NOT NULL,
+    "userId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -44,12 +43,12 @@ CREATE TABLE "IndividualClient" (
 -- CreateTable
 CREATE TABLE "CorporateClient" (
     "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
     "cnpj" VARCHAR(18) NOT NULL,
     "stateRegistration" TEXT NOT NULL,
     "address" TEXT NOT NULL,
     "phoneNumber" TEXT NOT NULL,
     "contractNumber" VARCHAR(20) NOT NULL,
+    "userId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -69,7 +68,6 @@ CREATE TABLE "VisitSchedule" (
     "landmark" TEXT NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "contactFormId" INTEGER NOT NULL,
 
     CONSTRAINT "VisitSchedule_pkey" PRIMARY KEY ("id")
 );
@@ -83,7 +81,8 @@ CREATE TABLE "TechnicalSupportTicket" (
     "reason" TEXT NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "contactFormId" INTEGER,
+    "contractNumberIndivClient" TEXT,
+    "contractNumberCorpClient" TEXT,
 
     CONSTRAINT "TechnicalSupportTicket_pkey" PRIMARY KEY ("id")
 );
@@ -92,25 +91,16 @@ CREATE TABLE "TechnicalSupportTicket" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE INDEX "idx_userId" ON "ContactForm"("userId");
-
--- CreateIndex
-CREATE INDEX "idx_type" ON "ContactForm"("type");
-
--- CreateIndex
-CREATE UNIQUE INDEX "IndividualClient_userId_key" ON "IndividualClient"("userId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "IndividualClient_cpf_key" ON "IndividualClient"("cpf");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "IndividualClient_contractNumber_key" ON "IndividualClient"("contractNumber");
 
 -- CreateIndex
-CREATE INDEX "idx_userId_IndividualClient" ON "IndividualClient"("userId");
+CREATE UNIQUE INDEX "IndividualClient_userId_key" ON "IndividualClient"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "CorporateClient_userId_key" ON "CorporateClient"("userId");
+CREATE INDEX "idx_userId_IndividualClient" ON "IndividualClient"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "CorporateClient_cnpj_key" ON "CorporateClient"("cnpj");
@@ -119,19 +109,16 @@ CREATE UNIQUE INDEX "CorporateClient_cnpj_key" ON "CorporateClient"("cnpj");
 CREATE UNIQUE INDEX "CorporateClient_contractNumber_key" ON "CorporateClient"("contractNumber");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "CorporateClient_userId_key" ON "CorporateClient"("userId");
+
+-- CreateIndex
 CREATE INDEX "idx_userId_CorporateClient" ON "CorporateClient"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "VisitSchedule_contactFormId_key" ON "VisitSchedule"("contactFormId");
+CREATE UNIQUE INDEX "TechnicalSupportTicket_contractNumberIndivClient_key" ON "TechnicalSupportTicket"("contractNumberIndivClient");
 
--- AddForeignKey
-ALTER TABLE "ContactForm" ADD CONSTRAINT "contactForms_user" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ContactForm" ADD CONSTRAINT "contactForms_individualClient" FOREIGN KEY ("userId") REFERENCES "IndividualClient"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ContactForm" ADD CONSTRAINT "contactForms_corporateClient" FOREIGN KEY ("userId") REFERENCES "CorporateClient"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "TechnicalSupportTicket_contractNumberCorpClient_key" ON "TechnicalSupportTicket"("contractNumberCorpClient");
 
 -- AddForeignKey
 ALTER TABLE "IndividualClient" ADD CONSTRAINT "IndividualClient_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -140,7 +127,7 @@ ALTER TABLE "IndividualClient" ADD CONSTRAINT "IndividualClient_userId_fkey" FOR
 ALTER TABLE "CorporateClient" ADD CONSTRAINT "CorporateClient_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "VisitSchedule" ADD CONSTRAINT "VisitSchedule_contactFormId_fkey" FOREIGN KEY ("contactFormId") REFERENCES "ContactForm"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TechnicalSupportTicket" ADD CONSTRAINT "TechnicalSupportTicket_contractNumberIndivClient_fkey" FOREIGN KEY ("contractNumberIndivClient") REFERENCES "IndividualClient"("contractNumber") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TechnicalSupportTicket" ADD CONSTRAINT "TechnicalSupportTicket_contactFormId_fkey" FOREIGN KEY ("contactFormId") REFERENCES "ContactForm"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "TechnicalSupportTicket" ADD CONSTRAINT "TechnicalSupportTicket_contractNumberCorpClient_fkey" FOREIGN KEY ("contractNumberCorpClient") REFERENCES "CorporateClient"("contractNumber") ON DELETE SET NULL ON UPDATE CASCADE;

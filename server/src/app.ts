@@ -5,6 +5,7 @@ import helmet from "helmet";
 import { handleErrors } from "./middlewares/handleErrors.middleware";
 import { mailRouter } from "./routes/mail.routes";
 import { usersRouter } from "./routes/users.routes";
+import { contactFormRouter } from "./routes/contactForm.routes";
 
 export const app: Application = express();
 
@@ -15,6 +16,7 @@ app.use(json());
 
 app.use("/", mailRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/contact", contactFormRouter);
 
 
 app.use(handleErrors);

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { AnyZodObject, ZodError } from "zod";
 import { AppError } from "../errors/AppError";
 import { prisma } from "../database";
+import { DynamicParamsIdFinder, PrismaClientGeneric } from "../interfaces/utils.interface";
 
 class EnsureMiddleware {
 
@@ -18,6 +19,28 @@ class EnsureMiddleware {
                 }
             }
         };
+    
+    public paramsIdExists = ({ searchKey, error, model }: DynamicParamsIdFinder) => async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> => {
+
+        const id = Number(req.params[searchKey]);
+        const client = prisma[model] as PrismaClientGeneric;
+
+        const foundData = await client.findFirst({
+            where: { id }
+        });
+
+        if (!foundData) {
+            throw new AppError(error, 404);
+        }
+
+        res.locals = { ...res.locals, foundData };
+
+        return next();
+    };
 
     public paramsUserIdExists = async (
         req: Request,
